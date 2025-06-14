@@ -8,7 +8,7 @@ import TextInput from '../inputs/TextInput/TextInput';
 import { GrPrevious, GrNext } from "react-icons/gr";
 import { IoIosAdd } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
-import { addNewRsvp } from '@/app/(serverFunctions)/rsvp';
+import { addNewRsvp, RsvpEntry } from '@/app/(serverFunctions)/rsvp';
 import OkModal from '@/ui/Modals/OkModal';
 
 
@@ -30,7 +30,8 @@ const RsvpForm = () => {
     guestNames: [''],
     contactEmail: '',
     contactNumber: '',
-    attendance: 'Baptism & Reception'
+    attendance: 'Baptism & Reception',
+    rsvpId: ''
   });
 
   const [showModal, setShowModal] = useState(false);
@@ -96,7 +97,9 @@ const RsvpForm = () => {
 
       setShowModal(true)
 
-      data.map((entry) => setConfirmationId(entry.rsvpId))
+      console.log(data)
+      setConfirmationId(data.rsvpId)
+      
      }
 
     } catch (error) {
