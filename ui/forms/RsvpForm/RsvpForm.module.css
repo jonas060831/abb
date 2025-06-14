@@ -1,0 +1,95 @@
+.formWrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-width: 500px;
+  overflow: hidden;
+  margin: auto;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.form_page {
+    width: 74%;
+}
+
+.form_page_title {
+    font-weight: 100;
+    font-family: var(--font-raleway);
+}
+
+.guestField {
+    display: flex;
+}
+
+.deleteGuestButton {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+}
+.deleteGuestButton:hover {
+    opacity: 0.8;
+}
+
+.formStep {
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 3rem;
+}
+
+.form_button {
+  padding: 0.6rem 1.2rem;
+  width: 6rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff4081;
+  color: white;
+  cursor: pointer;
+  font-family: var(--font-lato);
+}
+
+.form_button:hover {
+  background-color: #e73370;
+}
+
+.addGuestButton {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: rgb(11, 184, 11);
+    color: white;
+    font-size: larger;
+    cursor: pointer;
+}
+.addGuestButton:hover { opacity: 0.8;}
+
+.radioOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.confirmationId {
+  padding: 1rem;
+  background-color: #ff4081;
+  border-radius: 100vw;
+  color: white;
+  font-family: var(--font-lato);
+  font-weight: 400;
+}

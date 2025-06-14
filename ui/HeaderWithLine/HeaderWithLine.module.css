@@ -1,0 +1,18 @@
+.header_with_line {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* space between line and text */
+  color: #333;
+  margin: 0.6rem 0rem;
+  font-size:xx-large;
+  font-family: var(--font-babylonica);
+  width: 80vw;
+}
+
+.header_with_line::before,
+.header_with_line::after {
+  content: "";
+  flex-grow: 1;
+  height: 1px;
+  background: #ccc;
+}

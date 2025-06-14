@@ -1,0 +1,63 @@
+
+
+.header {
+ font-family: var(--font-italianno);
+ font-size: 4rem;
+ text-align: center;
+
+}
+
+.details_table {
+  display: flex;
+  flex-direction: row; /* desktop: side-by-side pairs */
+  gap: 20px;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.table_header {
+  font-weight: 700;
+  margin-bottom: 8px;
+
+}
+
+.cell {
+  /* your details styling */
+  font-family: var(--font-raleway);
+  color: gray;
+}
+
+.celebrant_name {
+    font-size: 15rem;
+}
+
+
+/* Desktop only */
+@media (min-width: 821px) { }
+
+/* Tablet only */
+@media (min-width: 481px) and (max-width: 820px) { }
+
+/* Mobile only */
+@media (min-width: 320px) and (max-width: 480px) {
+    .container {
+        height: 90vh;
+    }
+    .header {
+        margin-top: -2rem;
+        font-size: 2.3rem;
+    }
+    .details_table {
+        flex-direction: column;
+    }
+    .celebrant_name {
+        font-size: 3.5rem;
+    }
+}
