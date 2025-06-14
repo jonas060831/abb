@@ -92,11 +92,11 @@ const RsvpForm = () => {
      
      const { success, data } = res
 
-     if(success) {
+     if(success && data) {
 
       setShowModal(true)
 
-      setConfirmationId(data!.rsvpId!)
+      data.map((entry) => setConfirmationId(entry.rsvpId))
      }
 
     } catch (error) {

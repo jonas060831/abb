@@ -1,4 +1,3 @@
-// Define the type of the RSVP entry
 export interface RsvpEntry {
   guestNames: string[];
   contactEmail: string;
@@ -7,13 +6,18 @@ export interface RsvpEntry {
   rsvpId: string;
 }
 
-
+export interface RsvpResponse {
+  success: boolean;
+  data?: RsvpEntry[];
+  rsvpId?: string;
+  error?: string;
+}
 
 // GET all RSVPs
-export const getAllRsvp = async (): Promise<any> => {
+export const getAllRsvp = async (): Promise<RsvpResponse> => {
   try {
     const res = await fetch('/api/rsvp');
-    const data = await res.json();
+    const data: RsvpResponse = await res.json();
     return data;
   } catch (error) {
     console.error(error);
@@ -22,7 +26,9 @@ export const getAllRsvp = async (): Promise<any> => {
 };
 
 // POST a new RSVP
-export const addNewRsvp = async (formData: Omit<RsvpEntry, 'rsvpId'>): Promise<any> => {
+export const addNewRsvp = async (
+  formData: Omit<RsvpEntry, 'rsvpId'>
+): Promise<RsvpResponse> => {
   try {
     const options: RequestInit = {
       method: 'POST',
@@ -33,7 +39,7 @@ export const addNewRsvp = async (formData: Omit<RsvpEntry, 'rsvpId'>): Promise<a
     };
 
     const res = await fetch('/api/rsvp', options);
-    const data = await res.json();
+    const data: RsvpResponse = await res.json();
 
     return data;
   } catch (error) {

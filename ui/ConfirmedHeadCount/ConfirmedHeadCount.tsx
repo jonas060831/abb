@@ -12,17 +12,21 @@ const ConfirmedHeadCount = () => {
   }, [rsvp])
 
   const fetchAllRsvps = async () => {
+  try {
+    const res = await getAllRsvp();
 
-      
-    try {
-        const res = await getAllRsvp()
-
-        setRsvp(res.data.length)
-        
-    } catch (error) {
-        console.log(error)
+    if (res && Array.isArray(res.data)) {
+      setRsvp(res.data.length);
+    } else {
+      console.warn("No RSVPs found or invalid response format.");
+      setRsvp(0);
     }
+  } catch (error) {
+    console.error("Failed to fetch RSVPs:", error);
+    setRsvp(0);
   }
+};
+
 
   if(rsvp === null && rsvp !== 0) return <p style={{ position: 'absolute', display: 'flex', alignSelf: 'center', justifySelf: 'center', marginTop: '-36rem' }}>Loading...</p>
   
