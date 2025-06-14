@@ -7,6 +7,7 @@ import { MdOutlineAccessTimeFilled } from "react-icons/md";
 
 import HeaderWithLine from '../HeaderWithLine/HeaderWithLine';
 import { useRouter } from 'next/navigation';
+import Button from '../Buttons/Button';
 
 
 const Hero = () => {
@@ -46,7 +47,12 @@ const Hero = () => {
               <p style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <MdOutlineAccessTimeFilled /> 12:30PM
               </p>
-              <button onClick={() => scrollToSection("baptismDetailsSection")}>view more</button>
+
+              <Button
+               value='view more'
+               icon='arrow_down'
+               onClick={() => scrollToSection('baptismDetailsSection')}
+              />
             </div>
           </div>
 
@@ -63,7 +69,13 @@ const Hero = () => {
               <p style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <MdOutlineAccessTimeFilled /> 01:30 PM
               </p>
-              <button onClick={() => scrollToSection("receptionDetailsSection")}>view more</button>
+              
+              <Button
+               value='view more'
+               icon='arrow_down'
+               onClick={() => scrollToSection('receptionDetailsSection')}
+              />
+
             </div>
           </div>
         </div>

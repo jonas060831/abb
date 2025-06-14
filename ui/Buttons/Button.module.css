@@ -1,0 +1,11 @@
+.custom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    background-color: #e83b76;
+    border: none;
+    padding: 0.5rem;
+    color: white;
+    cursor: pointer;
+}
