@@ -96,7 +96,7 @@ const RsvpForm = () => {
 
       setShowModal(true)
 
-      setConfirmationId(data.rsvpId)
+      setConfirmationId(data!.rsvpId!)
      }
 
     } catch (error) {
