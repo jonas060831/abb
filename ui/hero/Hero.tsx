@@ -6,7 +6,6 @@ import { FaLocationPin } from "react-icons/fa6";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
 
 import HeaderWithLine from '../HeaderWithLine/HeaderWithLine';
-import { useRouter } from 'next/navigation';
 import Button from '../Buttons/Button';
 
 
@@ -69,7 +68,7 @@ const Hero = () => {
               <p style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <MdOutlineAccessTimeFilled /> 01:30 PM
               </p>
-              
+
               <Button
                value='view more'
                icon='arrow_down'
