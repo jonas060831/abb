@@ -49,8 +49,8 @@ html {
   background-color: #ff4081;
   color: white;
   border: none;
-  height: 8vh;
-  width: 8vh;
+  height: 70px;
+  width: 70px;
   border-radius: 100vw;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   cursor: pointer;
