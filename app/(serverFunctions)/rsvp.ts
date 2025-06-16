@@ -1,3 +1,4 @@
+
 export interface RsvpEntry {
   guestNames: string[];
   contactEmail: string;
@@ -52,5 +53,32 @@ export const addNewRsvp = async (
   } catch (error) {
     console.error(error);
     return { success: false, error: (error as Error).message };
+  }
+};
+
+
+//send rsvp email to the guest
+export const sendRSVPConfirmationEmailToGuest = async (
+  senderEmail: string,
+  testEmail: string
+): Promise<{ success: true; data: string } | { success: false; error: string }> => {
+  try {
+    const res = await fetch('/api/emails/rsvp-confirmation-guest', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ senderEmail, testEmail }),
+    });
+
+    const data = await res.json();
+
+    return { success: true, data };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
   }
 };

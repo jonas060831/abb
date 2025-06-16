@@ -8,8 +8,11 @@ import TextInput from '../inputs/TextInput/TextInput';
 import { GrPrevious, GrNext } from "react-icons/gr";
 import { IoIosAdd } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
-import { addNewRsvp, RsvpEntry } from '@/app/(serverFunctions)/rsvp';
+import { addNewRsvp, RsvpEntry, sendRSVPConfirmationEmailToGuest } from '@/app/(serverFunctions)/rsvp';
 import OkModal from '@/ui/Modals/OkModal';
+import TestEmail from '@/emails/test-email';
+import { renderToStaticMarkup } from 'react-dom/server';
+import RsvpConfirmationEmail from '@/emails/RsvpConfirmationEmail';
 
 
 const steps = [
@@ -93,14 +96,23 @@ const RsvpForm = () => {
      
      const { success, data } = res
 
+
+     //rsvp data created successfully 
      if(success && data) {
 
       setShowModal(true)
 
       console.log(data)
       setConfirmationId(data.rsvpId)
-      
-     }
+
+
+      const html = renderToStaticMarkup(<RsvpConfirmationEmail guestName={formData.guestNames[0]} confirmationNumber={data.rsvpId} />)
+
+
+      //send email to guest
+      sendRSVPConfirmationEmailToGuest(formData.contactEmail, html )
+     
+      }
 
     } catch (error) {
       console.log(error)
