@@ -1,39 +1,42 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation';
+'use client'
 
-import { MdRsvp, MdHomeFilled } from "react-icons/md";
+import React, { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { MdRsvp, MdHomeFilled } from 'react-icons/md'
+import Image from 'next/image'
+import LoadingSpinner from '@/public/medias/svgs/loading-spinner.svg'
 
 const RsvpButton = () => {
-
   const router = useRouter()
-  const url = usePathname()
+  const pathname = usePathname()
 
-  const [onRsvp, setIsOnRsvp] = useState(false)
+  const [onRsvp, setOnRsvp] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
+    setOnRsvp(pathname.includes('/rsvp'))
+    setLoading(false)
+  }, [pathname])
 
-    if(url.includes('rsvp')) {
-        setIsOnRsvp(true)
-    } else {
-        setIsOnRsvp(false)
-    }
-  }, [url,onRsvp])
-
-  if(onRsvp) return (
-    <button
-     className="rsvp_button"
-     onClick={() => router.push('/')}
-    >
-     <MdHomeFilled size={38}/>
-    </button>
-  )
+  const handleClick = (path: string) => {
+    if (pathname === path) return
+    setLoading(true)
+    router.push(path)
+  }
 
   return (
     <button
-     className="rsvp_button"
-     onClick={() => router.push('/rsvp')}
+      className="rsvp_button"
+      onClick={() => handleClick(onRsvp ? '/' : '/rsvp')}
+      disabled={loading}
     >
-        <MdRsvp size={50}/>
+      {loading ? (
+        <Image src={LoadingSpinner} alt="Loading..." width={38} height={38} />
+      ) : onRsvp ? (
+        <MdHomeFilled size={38} />
+      ) : (
+        <MdRsvp size={50} />
+      )}
     </button>
   )
 }
