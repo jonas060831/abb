@@ -1,5 +1,6 @@
 "use client"
 import VerticalBreadCrumbs from "../BreadCrumbs/VerticalBreadCrumbs"
+import Button from "../Buttons/Button";
 import HeaderWithLine from "../HeaderWithLine/HeaderWithLine"
 
 import styles from './BaptismDetails.module.css'
@@ -41,7 +42,7 @@ const baptismDetails = [
     },
     {
         title: 'Drive Now?',
-        content: <button onClick={openMaps}>Open Maps</button>
+        content: <Button value="Open Maps" onClick={openMaps} icon="location"/>
     }
 
 ]

@@ -1,6 +1,7 @@
-import  { FC, ReactNode } from 'react'
+import  { FC } from 'react'
 
-import { GoDotFill, GoChevronDown } from "react-icons/go";
+import { GoDotFill, GoChevronDown,  } from "react-icons/go";
+import { FaMap, FaLocationArrow } from "react-icons/fa";
 
 import styles from './Button.module.css'
 
@@ -9,7 +10,7 @@ type ButtonProps = {
     type?: 'submit' | 'button'
     className?: 'light' | 'dark' | 'custom'
     value?: string
-    icon?: 'arrow_down' | 'arrow_up' | 'arrow_left' | 'arrow_right' | 'dot'
+    icon?: 'arrow_down' | 'arrow_up' | 'arrow_left' | 'arrow_right' | 'location' | 'map' | 'dot'
 }
 
 
@@ -22,7 +23,10 @@ const Button:FC<ButtonProps> = ({ type='button', className='custom', value='subm
     switch (icon) {
       case 'arrow_down':
         return <GoChevronDown />
-
+      case 'map':
+        return <FaMap />
+      case 'location':
+        return <FaLocationArrow />
     
       default:
         return <GoDotFill />
