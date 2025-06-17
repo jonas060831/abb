@@ -8,15 +8,15 @@ const POST = async (req: NextRequest): Promise<NextResponse> => {
     await connectDB();
 
     const body = await req.json();
-    const { senderEmail, testEmail } = body;
+    const { guestEmail, rsvpEmailToGuestTemplate } = body;
 
     const transporter = await createTransporter();
 
     await transporter.sendMail({
       from: `Sulit Family <${process.env.GOOGLE_EMAIL}>`,
-      to: senderEmail,
+      to: guestEmail,
       subject: "Amara's Baptism and Birthday Celebration",
-      html: testEmail,
+      html: rsvpEmailToGuestTemplate,
     });
 
     return NextResponse.json(

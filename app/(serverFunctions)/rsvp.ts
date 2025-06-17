@@ -5,6 +5,7 @@ export interface RsvpEntry {
   contactNumber: string;
   attendance: string;
   rsvpId: string;
+  createdAt?: string;
 }
 
 export interface RsvpResponse {
@@ -59,8 +60,8 @@ export const addNewRsvp = async (
 
 //send rsvp email to the guest
 export const sendRSVPConfirmationEmailToGuest = async (
-  senderEmail: string,
-  testEmail: string
+  guestEmail: string,
+  rsvpEmailToGuestTemplate: string
 ): Promise<{ success: true; data: string } | { success: false; error: string }> => {
   try {
     const res = await fetch('/api/emails/rsvp-confirmation-guest', {
@@ -68,7 +69,7 @@ export const sendRSVPConfirmationEmailToGuest = async (
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ senderEmail, testEmail }),
+      body: JSON.stringify({ guestEmail, rsvpEmailToGuestTemplate }),
     });
 
     const data = await res.json();
@@ -82,3 +83,30 @@ export const sendRSVPConfirmationEmailToGuest = async (
     };
   }
 };
+
+export const sendRSVPConfirmationEmailToEventOwner = async (rsvpEmailToOwnerTemplate: string): Promise<{ success: true; data: string } | { success: false; error: string }> => {
+
+  try {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type' : 'application/json'
+      },
+      body: JSON.stringify({ rsvpEmailToOwnerTemplate })
+    }
+
+    const res = await fetch('/api/emails/rsvp-confirmation-event-owner', options)
+
+    const data = await res.json()
+
+    return { success: true, data }
+
+  } catch (error) {
+    console.error(error)
+    return {
+      success: false,
+      error: (error as Error).message
+    }
+  }
+
+}

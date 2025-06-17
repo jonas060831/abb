@@ -1,18 +1,18 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import styles from './RsvpForm.module.css';
 import TextInput from '../inputs/TextInput/TextInput';
 
 import { GrPrevious, GrNext } from "react-icons/gr";
 import { IoIosAdd } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
-import { addNewRsvp, RsvpEntry, sendRSVPConfirmationEmailToGuest } from '@/app/(serverFunctions)/rsvp';
+import { addNewRsvp, sendRSVPConfirmationEmailToGuest, sendRSVPConfirmationEmailToEventOwner } from '@/app/(serverFunctions)/rsvp';
 import OkModal from '@/ui/Modals/OkModal';
-import TestEmail from '@/emails/test-email';
 import { renderToStaticMarkup } from 'react-dom/server';
 import RsvpConfirmationEmail from '@/emails/RsvpConfirmationEmail';
+import RsvpOwnerNotificationEmail from '@/emails/RsvpNoticeToEventOwner';
 
 
 const steps = [
@@ -102,15 +102,36 @@ const RsvpForm = () => {
 
       setShowModal(true)
 
-      console.log(data)
       setConfirmationId(data.rsvpId)
 
+      const stringDate: string = new Date(data.createdAt!).toLocaleString('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
 
-      const html = renderToStaticMarkup(<RsvpConfirmationEmail guestName={formData.guestNames[0]} confirmationNumber={data.rsvpId} />)
 
+      const rsvpConfirmationEmailToGuest = renderToStaticMarkup(
+        <RsvpConfirmationEmail
+         guestName={formData.guestNames[0]}
+         confirmationNumber={data.rsvpId}
+        />
+      )
+      const rsvpConfirmationEmailToEventOwner = renderToStaticMarkup(
+        <RsvpOwnerNotificationEmail
+         eventOwnerName='Master and ms. Kristine'
+         dashboardUrl=''
+         guestName={data.guestNames[0]}
+         guestEmail={data.contactEmail}
+         guestCount={data.guestNames.length}
+         rsvpTime={stringDate}
+        />
+      )
 
       //send email to guest
-      sendRSVPConfirmationEmailToGuest(formData.contactEmail, html )
+      sendRSVPConfirmationEmailToGuest(formData.contactEmail, rsvpConfirmationEmailToGuest )
+
+      //send message to event organizers
+      sendRSVPConfirmationEmailToEventOwner(rsvpConfirmationEmailToEventOwner)
      
       }
 
