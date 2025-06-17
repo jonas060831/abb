@@ -14,7 +14,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import RsvpConfirmationEmail from '@/emails/RsvpConfirmationEmail';
 import RsvpOwnerNotificationEmail from '@/emails/RsvpNoticeToEventOwner';
 
-
 const steps = [
   { id: 1, content: "Step 1: Guest'(s) Information" },
   { id: 2, content: 'Step 2: Contact Details' },
@@ -39,6 +38,7 @@ const RsvpForm = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [confirmationId, setConfirmationId] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   
   const paginate = (newDirection: number) => {
     if ((newDirection === 1 && page >= steps.length - 1) || (newDirection === -1 && page <= 0)) {
@@ -81,7 +81,7 @@ const RsvpForm = () => {
   const handleSubmit = async (event: FormEvent) => {
     
     event.preventDefault()
-
+    setIsLoading(true)
     const cleanedGuestNames = formData.guestNames.filter(name => name.trim() !== '');
 
     const cleanedData = {
@@ -100,39 +100,40 @@ const RsvpForm = () => {
      //rsvp data created successfully 
      if(success && data) {
 
-      setShowModal(true)
+        setShowModal(true)
 
-      setConfirmationId(data.rsvpId)
+        setConfirmationId(data.rsvpId)
 
-      const stringDate: string = new Date(data.createdAt!).toLocaleString('en-US', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      });
+        const stringDate: string = new Date(data.createdAt!).toLocaleString('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        });
 
 
-      const rsvpConfirmationEmailToGuest = renderToStaticMarkup(
-        <RsvpConfirmationEmail
-         guestName={formData.guestNames[0]}
-         confirmationNumber={data.rsvpId}
-        />
-      )
-      const rsvpConfirmationEmailToEventOwner = renderToStaticMarkup(
-        <RsvpOwnerNotificationEmail
-         eventOwnerName='Master and ms. Kristine'
-         dashboardUrl=''
-         guestName={data.guestNames[0]}
-         guestEmail={data.contactEmail}
-         guestCount={data.guestNames.length}
-         rsvpTime={stringDate}
-        />
-      )
+        const rsvpConfirmationEmailToGuest = renderToStaticMarkup(
+          <RsvpConfirmationEmail
+          guestName={formData.guestNames[0]}
+          confirmationNumber={data.rsvpId}
+          />
+        )
+        const rsvpConfirmationEmailToEventOwner = renderToStaticMarkup(
+          <RsvpOwnerNotificationEmail
+          eventOwnerName='Master and ms. Kristine'
+          dashboardUrl=''
+          guestName={data.guestNames[0]}
+          guestEmail={data.contactEmail}
+          guestCount={data.guestNames.length}
+          rsvpTime={stringDate}
+          />
+        )
 
-      //send email to guest
-      sendRSVPConfirmationEmailToGuest(formData.contactEmail, rsvpConfirmationEmailToGuest )
+        //send email to guest
+        sendRSVPConfirmationEmailToGuest(formData.contactEmail, rsvpConfirmationEmailToGuest )
 
-      //send message to event organizers
-      sendRSVPConfirmationEmailToEventOwner(rsvpConfirmationEmailToEventOwner)
-     
+        //send message to event organizers
+        sendRSVPConfirmationEmailToEventOwner(rsvpConfirmationEmailToEventOwner)
+        
+        setIsLoading(false)
       }
 
     } catch (error) {
@@ -275,7 +276,15 @@ const RsvpForm = () => {
         {step < steps.length - 1 ? (
           <button className={styles.form_button} onClick={() => paginate(1)}> <GrNext /> </button>
         ) : (
-          <button className={styles.form_button} onClick={handleSubmit}>Submit</button>
+          <button className={styles.form_button} onClick={handleSubmit}>
+            {
+              isLoading ? (
+                <img src="/medias/svgs/loading-spinner.svg" alt='Loading...' style={{ width: '20px' }}/>
+              ):(
+                'Submit'
+              )
+            }
+          </button>
         )}
       </div>
 
