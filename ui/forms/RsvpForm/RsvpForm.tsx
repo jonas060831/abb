@@ -37,9 +37,9 @@ const RsvpForm = () => {
   });
 
   const [showModal, setShowModal] = useState(false);
-  const [confirmationId, setConfirmationId] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  
+  const [confirmationId, setConfirmationId] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const paginate = (newDirection: number) => {
     if ((newDirection === 1 && page >= steps.length - 1) || (newDirection === -1 && page <= 0)) {
       return;
@@ -50,10 +50,9 @@ const RsvpForm = () => {
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-
+    const { name, value } = event.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  }
+  };
 
   const handleGuestNameChange = (index: number, value: string) => {
     setFormData(prev => {
@@ -78,68 +77,81 @@ const RsvpForm = () => {
     });
   };
 
+  const canProceedToNextStep = () => {
+    switch (step) {
+      case 0:
+        return formData.guestNames.some(name => name.trim() !== '' && name.length >= 3);
+      case 1:
+        return (
+          /\S+@\S+\.\S+/.test(formData.contactEmail) &&
+          formData.contactNumber.trim().length >= 10
+        );
+      case 2:
+        return attendanceOptions.includes(formData.attendance);
+      default:
+        return true;
+    }
+  };
+
   const handleSubmit = async (event: FormEvent) => {
-    
-    event.preventDefault()
-    setIsLoading(true)
+    event.preventDefault();
+    setIsLoading(true);
+
     const cleanedGuestNames = formData.guestNames.filter(name => name.trim() !== '');
+    const isValidEmail = /\S+@\S+\.\S+/.test(formData.contactEmail);
+    const isValidPhone = formData.contactNumber.trim().length >= 7;
+
+    if (cleanedGuestNames.length === 0 || !isValidEmail || !isValidPhone) {
+      alert("Please make sure all required fields are filled out properly:\n\n- Guest name(s)\n- Valid email\n- Valid phone number");
+      setIsLoading(false);
+      return;
+    }
 
     const cleanedData = {
       ...formData,
       guestNames: cleanedGuestNames
     };
 
-
     try {
-      
-     const res = await addNewRsvp(cleanedData)
-     
-     const { success, data } = res
+      const res = await addNewRsvp(cleanedData);
+      const { success, data } = res;
 
-
-     //rsvp data created successfully 
-     if(success && data) {
-
-        setShowModal(true)
-
-        setConfirmationId(data.rsvpId)
+      if (success && data) {
+        setShowModal(true);
+        setConfirmationId(data.rsvpId);
 
         const stringDate: string = new Date(data.createdAt!).toLocaleString('en-US', {
           dateStyle: 'medium',
           timeStyle: 'short',
         });
 
-
         const rsvpConfirmationEmailToGuest = renderToStaticMarkup(
           <RsvpConfirmationEmail
-          guestName={formData.guestNames[0]}
-          confirmationNumber={data.rsvpId}
+            guestName={cleanedGuestNames[0]}
+            confirmationNumber={data.rsvpId}
           />
-        )
+        );
+
         const rsvpConfirmationEmailToEventOwner = renderToStaticMarkup(
           <RsvpOwnerNotificationEmail
-          eventOwnerName='Master and ms. Kristine'
-          dashboardUrl=''
-          guestName={data.guestNames[0]}
-          guestEmail={data.contactEmail}
-          guestCount={data.guestNames.length}
-          rsvpTime={stringDate}
+            eventOwnerName='Master and ms. Kristine'
+            dashboardUrl=''
+            guestName={data.guestNames[0]}
+            guestEmail={data.contactEmail}
+            guestCount={data.guestNames.length}
+            rsvpTime={stringDate}
           />
-        )
+        );
 
-        //send email to guest
-        sendRSVPConfirmationEmailToGuest(formData.contactEmail, rsvpConfirmationEmailToGuest )
+        await sendRSVPConfirmationEmailToGuest(formData.contactEmail, rsvpConfirmationEmailToGuest);
+        await sendRSVPConfirmationEmailToEventOwner(rsvpConfirmationEmailToEventOwner);
 
-        //send message to event organizers
-        sendRSVPConfirmationEmailToEventOwner(rsvpConfirmationEmailToEventOwner)
-        
-        setIsLoading(false)
+        setIsLoading(false);
       }
-
     } catch (error) {
-      console.log(error)
+      console.error(error);
+      setIsLoading(false);
     }
-
   };
 
   return (
@@ -209,62 +221,56 @@ const RsvpForm = () => {
           )}
           {step === 1 && (
             <div className={styles.form_page}>
-
-                <TextInput
-                 name='contactEmail'
-                 type='email'
-                 label='Email Address'
-                 value={formData.contactEmail}
-                 onChange={handleChange}
-                />
-
-                <TextInput
-                 name='contactNumber'
-                 type='text'
-                 label='Phone #'
-                 value={formData.contactNumber}
-                 onChange={handleChange}
-                />
-
+              <TextInput
+                name='contactEmail'
+                type='email'
+                label='Email Address'
+                value={formData.contactEmail}
+                onChange={handleChange}
+              />
+              <TextInput
+                name='contactNumber'
+                type='text'
+                label='Phone #'
+                value={formData.contactNumber}
+                onChange={handleChange}
+              />
             </div>
           )}
           {step === 2 && (
             <div className={styles.radioGroup}>
-                <div className={styles.radioOptions}>
-                    {attendanceOptions.map((option) => (
-                    <label key={option}>
-                        <input
-                        type="radio"
-                        name="attendance"
-                        value={option}
-                        checked={formData.attendance === option}
-                        onChange={handleChange}
-                        />
-                        &nbsp;&nbsp; {option}
-                    </label>
-                    ))}
-                </div>
+              <div className={styles.radioOptions}>
+                {attendanceOptions.map((option) => (
+                  <label key={option}>
+                    <input
+                      type="radio"
+                      name="attendance"
+                      value={option}
+                      checked={formData.attendance === option}
+                      onChange={handleChange}
+                    />
+                    &nbsp;&nbsp; {option}
+                  </label>
+                ))}
+              </div>
             </div>
           )}
           {step === 3 && (
             <div>
-                <strong style={{ color: 'gray' }}>Attendee{formData.guestNames.length > 1 ? 's' : ''} </strong>
-                <ul>
-                    {formData.guestNames.map((names, index) => (
-                        <li key={index}>{names}</li>
-                    ))}
-                </ul>
-                <br />
-                <hr />
-                <strong style={{ color: 'gray' }}>Contact Details</strong> <br /><br />
-
-                <strong>Email:</strong> {formData.contactEmail} <br /><br />
-                <strong>Phone #:</strong> {formData.contactNumber}
-                <br /><br />
-                <hr />
-                <p><strong style={{ color: 'gray' }}>Attendance:</strong> {formData.attendance}</p>
-                
-
+              <strong style={{ color: 'gray' }}>Attendee{formData.guestNames.length > 1 ? 's' : ''} </strong>
+              <ul>
+                {formData.guestNames.map((names, index) => (
+                  <li key={index}>{names}</li>
+                ))}
+              </ul>
+              <br />
+              <hr />
+              <strong style={{ color: 'gray' }}>Contact Details</strong> <br /><br />
+              <strong>Email:</strong> {formData.contactEmail} <br /><br />
+              <strong>Phone #:</strong> {formData.contactNumber}
+              <br /><br />
+              <hr />
+              <p><strong style={{ color: 'gray' }}>Attendance:</strong> {formData.attendance}</p>
             </div>
           )}
         </motion.div>
@@ -275,13 +281,23 @@ const RsvpForm = () => {
           <button className={styles.form_button} onClick={() => paginate(-1)}> <GrPrevious /> </button>
         )}
         {step < steps.length - 1 ? (
-          <button className={styles.form_button} onClick={() => paginate(1)}> <GrNext /> </button>
+          <button
+            className={styles.form_button}
+            onClick={() => paginate(1)}
+            disabled={!canProceedToNextStep()}
+            style={{
+              opacity: canProceedToNextStep() ? 1 : 0.5,
+              cursor: canProceedToNextStep() ? 'pointer' : 'not-allowed'
+            }}
+          >
+            <GrNext />
+          </button>
         ) : (
           <button className={styles.form_button} onClick={handleSubmit}>
             {
               isLoading ? (
-                <img src="/medias/svgs/loading-spinner.svg" alt='Loading...' style={{ width: '20px' }}/>
-              ):(
+                <img src="/medias/svgs/loading-spinner.svg" alt='Loading...' style={{ width: '20px' }} />
+              ) : (
                 'Submit'
               )
             }
@@ -289,24 +305,22 @@ const RsvpForm = () => {
         )}
       </div>
 
-
-      {/* Response from server */}
       <OkModal
         show={showModal}
         title="Thank You!"
         redirectUrl='/'
-        message={<div style={{textAlign: 'left'}}>
-          Woohoo! 🎉 You're in! <br /><br />
-          Thanks for RSVPing. We can't wait to celebrate with you. <br /><br />
-          Get ready for fun, hugs, and maybe a dance move or two!
-          
-          <br /><br /><br /><br />
-          <p>Confirmation Number: <span className={styles.confirmationId}> {confirmationId} </span></p>
-          <br /><br /><br /><br />
-        </div>}
+        message={
+          <div style={{ textAlign: 'left' }}>
+            Woohoo! 🎉 You're in! <br /><br />
+            Thanks for RSVPing. We can't wait to celebrate with you. <br /><br />
+            Get ready for fun, hugs, and maybe a dance move or two!
+            <br /><br /><br /><br />
+            <p>Confirmation Number: <span className={styles.confirmationId}> {confirmationId} </span></p>
+            <br /><br /><br /><br />
+          </div>
+        }
         onClose={() => setShowModal(false)}
       />
-
     </div>
   );
 };
