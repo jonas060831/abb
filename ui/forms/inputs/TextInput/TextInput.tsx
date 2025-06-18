@@ -9,9 +9,10 @@ interface TextInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
+  required?: boolean
 }
 
-const TextInput: React.FC<TextInputProps> = ({ label, name, value, onChange, type = 'text' }) => {
+const TextInput: React.FC<TextInputProps> = ({ label, name, value, onChange, type = 'text', required=false }) => {
   const [focused, setFocused] = useState(false);
 
   const shouldFloat = focused || value.length > 0;
@@ -33,6 +34,7 @@ const TextInput: React.FC<TextInputProps> = ({ label, name, value, onChange, typ
         onBlur={() => setFocused(false)}
         onChange={onChange}
         className={styles.input}
+        required={required}
       />
     </div>
   );

@@ -183,6 +183,7 @@ const RsvpForm = () => {
                     label={`Guest ${index + 1} Name`}
                     name={`guest-${index}`}
                     value={name}
+                    required={true}
                     onChange={(e) => handleGuestNameChange(index, e.target.value)}
                   />
                   {formData.guestNames.length > 1 && (
