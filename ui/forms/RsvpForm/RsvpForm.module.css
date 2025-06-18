@@ -93,3 +93,7 @@
   font-family: var(--font-lato);
   font-weight: 400;
 }
+
+.updateNotice {
+  text-align: center;
+}

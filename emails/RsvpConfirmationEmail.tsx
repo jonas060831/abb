@@ -8,12 +8,15 @@ import { Tailwind } from '@react-email/tailwind';
 type RsvpConfirmationEmailProps = {
   guestName: string;
   confirmationNumber: string;
+  editUrl: string;
 };
 
 export default function RsvpConfirmationEmail({
   guestName = 'Guest',
   confirmationNumber = 'ABC123',
+  editUrl,
 }: RsvpConfirmationEmailProps) {
+
   return (
     <Html>
       <Head>
@@ -49,6 +52,18 @@ export default function RsvpConfirmationEmail({
 
             <Text className="text-lg font-mono bg-[#ff4081] text-white px-4 py-2 rounded-md mt-2 inline-block tracking-wider">
               {confirmationNumber}
+            </Text>
+
+            <Text className="text-base leading-6 mt-6 text-black">
+              🔗 Need to update your RSVP details?{' '}
+              <a
+                href={editUrl}
+                className="text-[#ff4081] font-semibold underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Click here
+              </a>
             </Text>
 
             <Text className="text-base leading-6 mt-6 text-black">

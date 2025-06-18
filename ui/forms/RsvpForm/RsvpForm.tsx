@@ -156,6 +156,10 @@ const RsvpForm: FC<RsvpFormProps> = ({ initialData, mode = 'create' }) => {
       const { success, data } = res;
 
       if (success && data) {
+
+        console.log(success)
+        console.log(data)
+
         setShowModal(true);
         setConfirmationId(data.rsvpId || data._id);
 
@@ -170,6 +174,7 @@ const RsvpForm: FC<RsvpFormProps> = ({ initialData, mode = 'create' }) => {
             <RsvpConfirmationEmail
               guestName={cleanedGuestNames[0]}
               confirmationNumber={data.rsvpId || data._id}
+              editUrl={`${process.env.BASE_URL}/rsvp/update/${data._id}`}
             />
           );
 
