@@ -108,5 +108,55 @@ export const sendRSVPConfirmationEmailToEventOwner = async (rsvpEmailToOwnerTemp
       error: (error as Error).message
     }
   }
-
 }
+
+export const getRsvpById = async (rsvpId: string) => {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/rsvp/update/${rsvpId}`, {
+      cache: 'no-store', // Ensures fresh data for server components
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    
+    if (data.success) {
+      return data.data; // Return the actual RSVP data
+    } else {
+      return null; // Return null if not successful
+    }
+  } catch (error) {
+    console.error('Error fetching RSVP:', error);
+    return null; // Return null on error
+  }
+};
+
+export const updateRsvp = async (rsvpId: string, rsvpData: RsvpEntry) => {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/rsvp/update/${rsvpId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(rsvpData),
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error updating RSVP:', error);
+    return {
+      success: false,
+      error: (error as Error).message
+    };
+  }
+};

@@ -1,14 +1,14 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useState } from 'react';
 import styles from './RsvpForm.module.css';
 import TextInput from '../inputs/TextInput/TextInput';
 
 import { GrPrevious, GrNext } from "react-icons/gr";
 import { IoIosAdd } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
-import { addNewRsvp, sendRSVPConfirmationEmailToGuest, sendRSVPConfirmationEmailToEventOwner } from '@/app/(serverFunctions)/rsvp';
+import { addNewRsvp, updateRsvp, sendRSVPConfirmationEmailToGuest, sendRSVPConfirmationEmailToEventOwner } from '@/app/(serverFunctions)/rsvp';
 import OkModal from '@/ui/Modals/OkModal';
 import { renderToStaticMarkup } from 'react-dom/server';
 import RsvpConfirmationEmail from '@/emails/RsvpConfirmationEmail';
@@ -23,7 +23,24 @@ const steps = [
 
 const attendanceOptions = ['Baptism Only', 'Reception Only', 'Baptism & Reception'];
 
-const RsvpForm = () => {
+// Define the shape of RSVP data
+interface RsvpData {
+  _id?: string;
+  rsvpId?: string;
+  guestNames: string[];
+  contactEmail: string;
+  contactNumber: string;
+  attendance: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+type RsvpFormProps = {
+  initialData?: RsvpData;
+  mode?: 'create' | 'update';
+}
+
+const RsvpForm: FC<RsvpFormProps> = ({ initialData, mode = 'create' }) => {
   const [step, setStep] = useState(0);
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -39,6 +56,19 @@ const RsvpForm = () => {
   const [showModal, setShowModal] = useState(false);
   const [confirmationId, setConfirmationId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize form data when initialData is provided
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        guestNames: initialData.guestNames.length > 0 ? initialData.guestNames : [''],
+        contactEmail: initialData.contactEmail || '',
+        contactNumber: initialData.contactNumber || '',
+        attendance: initialData.attendance || 'Baptism & Reception',
+        rsvpId: initialData._id || initialData._id || ''
+      });
+    }
+  }, [initialData]);
 
   const paginate = (newDirection: number) => {
     if ((newDirection === 1 && page >= steps.length - 1) || (newDirection === -1 && page <= 0)) {
@@ -113,49 +143,105 @@ const RsvpForm = () => {
     };
 
     try {
-      const res = await addNewRsvp(cleanedData);
+      let res;
+      
+      if (mode === 'update' && formData.rsvpId) {
+        // Update existing RSVP
+        res = await updateRsvp(formData.rsvpId, cleanedData);
+      } else {
+        // Create new RSVP
+        res = await addNewRsvp(cleanedData);
+      }
+
       const { success, data } = res;
 
       if (success && data) {
         setShowModal(true);
-        setConfirmationId(data.rsvpId);
+        setConfirmationId(data.rsvpId || data._id);
 
-        const stringDate: string = new Date(data.createdAt!).toLocaleString('en-US', {
-          dateStyle: 'medium',
-          timeStyle: 'short',
-        });
+        // Only send emails for new RSVPs, not updates
+        if (mode === 'create') {
+          const stringDate: string = new Date(data.createdAt!).toLocaleString('en-US', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          });
 
-        const rsvpConfirmationEmailToGuest = renderToStaticMarkup(
-          <RsvpConfirmationEmail
-            guestName={cleanedGuestNames[0]}
-            confirmationNumber={data.rsvpId}
-          />
-        );
+          const rsvpConfirmationEmailToGuest = renderToStaticMarkup(
+            <RsvpConfirmationEmail
+              guestName={cleanedGuestNames[0]}
+              confirmationNumber={data.rsvpId || data._id}
+            />
+          );
 
-        const rsvpConfirmationEmailToEventOwner = renderToStaticMarkup(
-          <RsvpOwnerNotificationEmail
-            eventOwnerName='Master and ms. Kristine'
-            dashboardUrl=''
-            guestName={data.guestNames[0]}
-            guestEmail={data.contactEmail}
-            guestCount={data.guestNames.length}
-            rsvpTime={stringDate}
-          />
-        );
+          const rsvpConfirmationEmailToEventOwner = renderToStaticMarkup(
+            <RsvpOwnerNotificationEmail
+              eventOwnerName='Master and ms. Kristine'
+              dashboardUrl=''
+              guestName={data.guestNames[0]}
+              guestEmail={data.contactEmail}
+              guestCount={data.guestNames.length}
+              rsvpTime={stringDate}
+            />
+          );
 
-        await sendRSVPConfirmationEmailToGuest(formData.contactEmail, rsvpConfirmationEmailToGuest);
-        await sendRSVPConfirmationEmailToEventOwner(rsvpConfirmationEmailToEventOwner);
+          await sendRSVPConfirmationEmailToGuest(formData.contactEmail, rsvpConfirmationEmailToGuest);
+          await sendRSVPConfirmationEmailToEventOwner(rsvpConfirmationEmailToEventOwner);
+        }
 
         setIsLoading(false);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error submitting RSVP:', error);
+      alert('There was an error submitting your RSVP. Please try again.');
       setIsLoading(false);
     }
   };
 
+  const getModalTitle = () => {
+    return mode === 'update' ? 'RSVP Updated!' : 'Thank You!';
+  };
+
+  const getModalMessage = () => {
+    if (mode === 'update') {
+      return (
+        <div style={{ textAlign: 'left' }}>
+          Your RSVP has been successfully updated! 🎉 <br /><br />
+          We've got all your latest details. Thanks for keeping us in the loop!
+          <br /><br /><br /><br />
+          <p>Confirmation Number: <span className={styles.confirmationId}> {confirmationId} </span></p>
+          <br /><br /><br /><br />
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ textAlign: 'left' }}>
+        Woohoo! 🎉 You're in! <br /><br />
+        Thanks for RSVPing. We can't wait to celebrate with you. <br /><br />
+        Get ready for fun, hugs, and maybe a dance move or two!
+        <br /><br /><br /><br />
+        <p>Confirmation Number: <span className={styles.confirmationId}> {confirmationId} </span></p>
+        <br /><br /><br /><br />
+      </div>
+    );
+  };
+
+  const getSubmitButtonText = () => {
+    if (isLoading) {
+      return <img src="/medias/svgs/loading-spinner.svg" alt='Loading...' style={{ width: '20px' }} />;
+    }
+    return mode === 'update' ? 'Update RSVP' : 'Submit';
+  };
+
   return (
     <div className={styles.formWrapper}>
+      {mode === 'update' && (
+        <div className={styles.updateNotice}>
+          <h3>Update Your RSVP</h3>
+          <p>Make changes to your existing RSVP below.</p>
+        </div>
+      )}
+
       <AnimatePresence
         custom={direction}
         initial={false}
@@ -259,7 +345,7 @@ const RsvpForm = () => {
             <div>
               <strong style={{ color: 'gray' }}>Attendee{formData.guestNames.length > 1 ? 's' : ''} </strong>
               <ul>
-                {formData.guestNames.map((names, index) => (
+                {formData.guestNames.filter(name => name.trim() !== '').map((names, index) => (
                   <li key={index}>{names}</li>
                 ))}
               </ul>
@@ -278,7 +364,9 @@ const RsvpForm = () => {
 
       <div className={styles.buttonGroup}>
         {step > 0 && (
-          <button className={styles.form_button} onClick={() => paginate(-1)}> <GrPrevious /> </button>
+          <button className={styles.form_button} onClick={() => paginate(-1)}> 
+            <GrPrevious /> 
+          </button>
         )}
         {step < steps.length - 1 ? (
           <button
@@ -293,32 +381,17 @@ const RsvpForm = () => {
             <GrNext />
           </button>
         ) : (
-          <button className={styles.form_button} onClick={handleSubmit}>
-            {
-              isLoading ? (
-                <img src="/medias/svgs/loading-spinner.svg" alt='Loading...' style={{ width: '20px' }} />
-              ) : (
-                'Submit'
-              )
-            }
+          <button className={styles.form_button} onClick={handleSubmit} disabled={isLoading}>
+            {getSubmitButtonText()}
           </button>
         )}
       </div>
 
       <OkModal
         show={showModal}
-        title="Thank You!"
+        title={getModalTitle()}
         redirectUrl='/'
-        message={
-          <div style={{ textAlign: 'left' }}>
-            Woohoo! 🎉 You're in! <br /><br />
-            Thanks for RSVPing. We can't wait to celebrate with you. <br /><br />
-            Get ready for fun, hugs, and maybe a dance move or two!
-            <br /><br /><br /><br />
-            <p>Confirmation Number: <span className={styles.confirmationId}> {confirmationId} </span></p>
-            <br /><br /><br /><br />
-          </div>
-        }
+        message={getModalMessage()}
         onClose={() => setShowModal(false)}
       />
     </div>
