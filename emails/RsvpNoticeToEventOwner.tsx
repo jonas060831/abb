@@ -12,7 +12,7 @@ type RsvpOwnerNotificationProps = {
   guestEmail: string;
   guestCount: number;
   rsvpTime: string;
-  dashboardUrl: string;
+  dashboardUrl?: string;
   platformName?: string;
 };
 
@@ -22,7 +22,7 @@ export default function RsvpOwnerNotificationEmail({
   guestEmail = 'jane@example.com',
   guestCount = 2,
   rsvpTime = 'June 17, 2025, 10:00 AM',
-  dashboardUrl = 'https://master.d3hyynhxomne9o.amplifyapp.com/owner/dashboard',
+  dashboardUrl = 'http://localhost:5134/dashboard',
   platformName = 'System Generated',
 }: RsvpOwnerNotificationProps) {
   return (

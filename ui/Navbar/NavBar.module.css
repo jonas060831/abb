@@ -174,3 +174,17 @@
     justify-content: center;
     
 }
+
+.signout_button {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.signout_button:hover {
+  background-color: #d2d2d2;
+}

@@ -181,7 +181,7 @@ const RsvpForm: FC<RsvpFormProps> = ({ initialData, mode = 'create' }) => {
           const rsvpConfirmationEmailToEventOwner = renderToStaticMarkup(
             <RsvpOwnerNotificationEmail
               eventOwnerName='Master and ms. Kristine'
-              dashboardUrl=''
+              dashboardUrl={`${process.env.BASE_URL}/dashboard`}
               guestName={data.guestNames[0]}
               guestEmail={data.contactEmail}
               guestCount={data.guestNames.length}
