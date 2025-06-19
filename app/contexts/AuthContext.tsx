@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import DismissModal from '@/ui/Modals/DismissModal';
+import { decodeJWT } from '../utils/decodeJWT';
 
 type PayloadProps = {
   username: string;
@@ -49,20 +50,17 @@ const AuthContext = createContext<AuthContextValues>({
 });
 
 // --- Utility: Extract user data from JWT ---
+
+
 const getUserFromToken = (): User | null => {
   if (typeof window === 'undefined') return null;
 
   const token = localStorage.getItem('token');
   if (!token) return null;
 
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload as User;
-  } catch (error) {
-    console.error('Error decoding token:', error);
-    return null;
-  }
+  return decodeJWT<User>(token);
 };
+
 
 // --- Utility: Load currentAccount from localStorage ---
 const getStoredAccount = (): Account | null => {

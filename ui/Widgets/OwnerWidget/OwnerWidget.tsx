@@ -13,7 +13,8 @@ const OwnerWidget = () => {
   useEffect(() => {
     const fetchGuests = async () => {
       const res = await getAllRsvp();
-      console.log(res);
+
+      
       if (res.success && res.data) {
         setGuests(res.data);
       } else {
