@@ -9,7 +9,9 @@ const nextConfig: NextConfig = {
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     EVENT_OWNER_2: process.env.EVENT_OWNER_2,
-    BASE_URL: process.env.BASE_URL
+    BASE_URL: process.env.BASE_URL,
+    SALT_ROUND: process.env.SALT_ROUND,
+    JWT_SECRET: process.env.JWT_SECRET
   }
 };
 

@@ -6,6 +6,7 @@ export interface RsvpEntry {
   attendance: string;
   rsvpId: string;
   createdAt?: string;
+  _id?: string
 }
 
 export interface RsvpResponse {

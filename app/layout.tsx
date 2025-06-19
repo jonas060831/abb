@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Babylonica, Lato, Raleway, Geist, Geist_Mono, Italianno } from "next/font/google";
 import "./globals.css";
-import RsvpButton from "@/ui/RsvpButton/RsvpButton";
+import ClientWrapper from "./contexts/ClientWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,10 +57,10 @@ export default function RootLayout({
         ${raleway.variable}
         ${italianno.variable}
         `}
-      >
-        {children}
-
-        <RsvpButton />
+      > 
+        <ClientWrapper>
+          {children}
+        </ClientWrapper>
       </body>
     </html>
   );

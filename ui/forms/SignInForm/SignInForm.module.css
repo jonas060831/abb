@@ -1,0 +1,19 @@
+
+.sign_in_form_container {
+    font-family: var(--font-raleway);
+    font-weight: 300;
+
+}
+
+.logo {
+    width: 300px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: -5rem;
+}

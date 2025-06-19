@@ -32,6 +32,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  
 }
 
 .image {
@@ -69,7 +70,7 @@
 }
 
 /* New Thumbnail Styles */
-.thumbnails {
+.thumbnails { 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -169,7 +170,5 @@
 
 /* Mobile only */
 @media (min-width: 320px) and (max-width: 480px) {
-  .carousel_container {
-    height: 45vh;
-  }
+  
 }
