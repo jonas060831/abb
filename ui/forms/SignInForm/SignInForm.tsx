@@ -31,20 +31,25 @@ const SignInForm = () => {
   }
 
   const handleSubmit = async (event: FormEvent) => {
+    setIsLoading(true)
     event.preventDefault()
 
-    const res = await signInUser(formData)
+    try {
+      const res = await signInUser(formData)
 
-    
-    const token = res.token
+      const token = res.token
 
-    const user = JSON.parse(atob(token.split('.')[1]))
+      const user = JSON.parse(atob(token.split('.')[1]))
 
-    setUser(user,token)
+      setUser(user,token)
 
-
-    if(res.token) router.push('/dashboard')
-    else router.push('/sign-in?error=Invalid Credentials')
+      if(res.token) router.push('/dashboard')
+      else router.push('/sign-in?error=Invalid Credentials')
+  
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
+    }
     
   }
   return (
@@ -81,6 +86,7 @@ const SignInForm = () => {
             value='Sign In'
             type='submit'
             icon='arrow_right'
+            isLoading={isLoading}
             />
         </form>
     </div>

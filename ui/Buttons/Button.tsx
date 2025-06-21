@@ -7,6 +7,7 @@ import styles from './Button.module.css'
 
 type ButtonProps = {
     onClick?: () => void;
+    isLoading?: boolean;
     type?: 'submit' | 'button'
     className?: 'light' | 'dark' | 'custom'
     value?: string
@@ -16,7 +17,7 @@ type ButtonProps = {
 
 
 
-const Button:FC<ButtonProps> = ({ type='button', className='custom', value='submit', icon=null, onClick}) => {
+const Button:FC<ButtonProps> = ({ type='button', className='custom', value='submit', icon=null, onClick, isLoading=false}) => {
 
   const renderIcon = () => {
 
@@ -45,7 +46,14 @@ const Button:FC<ButtonProps> = ({ type='button', className='custom', value='subm
    onClick={onClick}
 
   >
-    {renderIcon()} {value}
+    {
+      isLoading ? 
+      (<img src='/medias/svgs/loading-spinner.svg' alt='' style={{ width: '20px' }}/>)
+      :
+      (renderIcon() )
+    }
+    
+    {value}
   </button>
   )
 }
