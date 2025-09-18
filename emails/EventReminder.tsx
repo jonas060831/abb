@@ -42,8 +42,8 @@ export default function EventReminderEmail({
             </Text>
 
             <Text className="text-base leading-6 mt-4 text-black">
-            The baptism will be held at: <span className="font-semibold">St. Augustine Catholic Church</span>.<br />
-            The reception will follow at: <span className="font-semibold">Via Mare of America</span>.
+            The baptism will be held at: <span className="font-semibold">St. Augustine Catholic Church at noon</span>.<br />
+            The reception will follow at: <span className="font-semibold">Via Mare of America at 01:30 PM</span>.
             </Text>
 
 
