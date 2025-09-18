@@ -161,3 +161,29 @@ export const updateRsvp = async (rsvpId: string, rsvpData: RsvpEntry) => {
     };
   }
 };
+
+
+export const sendEventReminderToGuest = async (
+  guestEmail: string,
+  rsvpEmailToGuestTemplate: string
+): Promise<{ success: true; data: string } | { success: false; error: string }> => {
+  try {
+    const res = await fetch('/api/emails/event-reminder-to-guest', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ guestEmail, rsvpEmailToGuestTemplate }),
+    });
+
+    const data = await res.json();
+
+    return { success: true, data };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
+  }
+};
